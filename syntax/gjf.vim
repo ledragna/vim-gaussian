@@ -52,7 +52,17 @@ syn keyword gjfTodo containedin=gjfComment contained TODO FIXME XXX NOTE
 syn match gjfComment "!.*$" contains=gjfTodo,@Spell
 
 " Root section
-syn region gjfRoot start=/^#/ end=/^$/ contains=gjfComment keepend
+syn region gjfRootr start=/^#/ end=/^$/ contains=@gjfdft,gjfComment,gjfroot keepend
+syn match gjfroot contained "^#\(P\|M\)\?\>"
+" dft keywords
+syn cluster gjfdft contains=gjfHdft,gjfPdft,gjfPsdft
+syn keyword gjfHdft contained b3lyp B3P86 O3LYP APFD wB97XD LC-wHPBE LC-wPBE CAM-B3LYP wB97XD
+                            \ wB97 wB97X MN15 M11 SOGGA11X N12SX MN12SX PW6B95 PW6B95D3
+                            \ M08HX M06 M06HF M062X M05 M052X PBE1PBE HSEH1PBE OHSE2PBE OHSE1PBE PBEh1PBE
+                            \ B1B95 B1LYP mPW1PW91 mPW1LYP mPW1PBE mPW3PBE B98 B971 B972 TPSSh tHCTHhyb
+                            \ BMK HISSbPBE X3LYP BHandH BHandHLYP
+syn match gjfPdft contained "\<\(lc-\)\?\(S\|XA\|B\|PW91\|mPW\|G96\|PBE\|O\|TPSS\|revTPSS\|BRx\|PKZB\|wPBEh\|PBEh\)\(VWN\|VWN5\|LYP\|PL\|P86\|PW91\|B95\|PBE\|TPSS\|revTPSS\|KCIS\|BRC\|PKZB\|VP86\|V5LYP\)\>"
+syn keyword gjfPsdft contained VSXC HCTH HCTH93 HCTH147 HCTH407 tHCTH B97D B97D3 M06L SOGGA11 M11L MN12L N12 MN15L
 
 "Last line must be empty
 syn match gjfLast /^.\+\%$/
@@ -64,5 +74,12 @@ hi def link gjfComment   Comment
 hi def link GjfBlockCmd  Statement
 hi def link gjfLink0      PreProc
 hi def link GjfFloat     Float
-hi def link gjfRoot Identifier
+hi def link gjfPsdft Identifier
+hi def link gjfroot Identifier
+"hi def link gjfRoot Identifier
 hi def link gjfLast ErrorMsg
+" root section colors
+hi def link gjfHdft gjfroot
+hi def link gjfPdft gjfroot
+hi def link gjfPsdft gjfroot
+hi def link gjfhash gjfroot
