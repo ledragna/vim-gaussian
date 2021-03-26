@@ -51,9 +51,25 @@ syn match gjfLink0 "%\(mem\|nprochared\|chk\|oldchk\|schk\|rwf\|oldmatrix\|oldra
 syn keyword gjfTodo containedin=gjfComment contained TODO FIXME XXX NOTE
 syn match gjfComment "!.*$" contains=gjfTodo,@Spell
 
+" bracket 
+syn cluster gjfParA contains=gjfParen,gjfParenClos,gjfParenOpen
+syn match gjfParenClos contained ")"
+syn match gjfParenOpen contained "("
+syn match gjfParen contained transparent "(\_[^ ]\+)" contains=ALLBUT,gjfParenOpen,gjfParenClos,gjfcomma
+" commas only between brackets
+syn match gjfcomma contained ","
+syn match gjfcommlef contained transparent "(," contains=gjfcomma
+syn match gjfcommrig contained transparent ",)" contains=gjfcomma
+syn cluster gjfgeneral contains=@gjfParA,gjfcomma,gjfcommlef,gjfcommrig
+
 " Root section
-syn region gjfRootr start=/^#/ end=/^$/ contains=@gjfdft,gjfComment,gjfroot,@gjfParA keepend transparent
+syn region gjfRootr start=/^#/ end=/^$/ contains=@gjfMethod,gjfComment,gjfroot,@gjfgeneral keepend transparent
 syn match gjfroot contained "^#\(P\|M\)\?\>"
+
+" Methods
+syn cluster gjfMethod contains=gjfHf,@gjfdft
+" HF
+syn match gjfHf contained "\<\(U\|R\|RO\)\?HF\>" 
 " dft keywords
 syn cluster gjfdft contains=gjfHdft,gjfPdft,gjfPsdft,gjfemp
 syn keyword gjfHdft contained b3lyp B3P86 O3LYP APFD wB97XD LC-wHPBE LC-wPBE CAM-B3LYP wB97XD
@@ -64,18 +80,14 @@ syn keyword gjfHdft contained b3lyp B3P86 O3LYP APFD wB97XD LC-wHPBE LC-wPBE CAM
 syn match gjfPdft contained "\<\(lc-\)\?\(S\|XA\|B\|PW91\|mPW\|G96\|PBE\|O\|TPSS\|revTPSS\|BRx\|PKZB\|wPBEh\|PBEh\)\(VWN\|VWN5\|LYP\|PL\|P86\|PW91\|B95\|PBE\|TPSS\|revTPSS\|KCIS\|BRC\|PKZB\|VP86\|V5LYP\)\>"
 syn keyword gjfPsdft contained VSXC HCTH HCTH93 HCTH147 HCTH407 tHCTH B97D B97D3 M06L SOGGA11 M11L MN12L N12 MN15L
 " empirical dispersion
-syn match gjfemp contained "\<EmpiricalDispersion\(=\(pdf\|d2\|d3\|d3bj\)\)\?\>" contains=gjfempd,gjfempdoptions
+syn match gjfemp contained "\<\i\+\(\(=\|=(\|(\)\i\+\)\?\>" contains=gjfempd,gjfempdoptions,@gjfParA,@gjfgeneral
+"syn match gjfemp contained "\<EmpiricalDispersion\(=\(pdf\|d2\|d3\|d3bj\)\)\?\>" contains=gjfempd,gjfempdoptions
 syn keyword gjfempd contained EmpiricalDispersion
 syn keyword gjfempdoptions contained pdf d2 d3 d3bj
 syn keyword gjfempalone contained B97D B2PLYPD mPW2PLYPD B97D3 PW6B95D3 B2PLYPD3
 " gaussian generic keywords with option
 " syn match
-
-" bracket 
-syn cluster gjfParA contains=gjfParen,gjfParenClos,gjfParenOpen
-syn match gjfParenClos contained ")"
-syn match gjfParenOpen contained "("
-syn match gjfParen contained transparent "(\_[^ ]\+)" contains=ALLBUT,gjfParenOpen,gjfParenClos
+"syn match gjfkeyopt contained "\<\i\+\(\(=\|=(\|(\)\i\+\)\?\>"
 
 "Last line must be empty
 syn match gjfLast /^.\+\%$/
@@ -88,13 +100,16 @@ hi def link GjfBlockCmd  Statement
 hi def link gjfLink0      PreProc
 hi def link GjfFloat     Float
 hi def link gjfroot Identifier
+" Errors
 hi def link gjfLast ErrorMsg
 hi def link gjfParenClos ErrorMsg
 hi def link gjfParenOpen ErrorMsg
+hi def link gjfcomma ErrorMsg
 " root section colors
 hi def link gjfHdft gjfroot
 hi def link gjfPdft gjfroot
 hi def link gjfPsdft gjfroot
 hi def link gjfempd gjfroot
+hi def link gjfHf gjfroot
 " options of root section
 hi def link gjfempdoptions Exception
