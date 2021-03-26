@@ -52,10 +52,10 @@ syn keyword gjfTodo containedin=gjfComment contained TODO FIXME XXX NOTE
 syn match gjfComment "!.*$" contains=gjfTodo,@Spell
 
 " Root section
-syn region gjfRootr start=/^#/ end=/^$/ contains=@gjfdft,gjfComment,gjfroot keepend
+syn region gjfRootr start=/^#/ end=/^$/ contains=@gjfdft,gjfComment,gjfroot,@gjfParA keepend transparent
 syn match gjfroot contained "^#\(P\|M\)\?\>"
 " dft keywords
-syn cluster gjfdft contains=gjfHdft,gjfPdft,gjfPsdft
+syn cluster gjfdft contains=gjfHdft,gjfPdft,gjfPsdft,gjfemp
 syn keyword gjfHdft contained b3lyp B3P86 O3LYP APFD wB97XD LC-wHPBE LC-wPBE CAM-B3LYP wB97XD
                             \ wB97 wB97X MN15 M11 SOGGA11X N12SX MN12SX PW6B95 PW6B95D3
                             \ M08HX M06 M06HF M062X M05 M052X PBE1PBE HSEH1PBE OHSE2PBE OHSE1PBE PBEh1PBE
@@ -63,6 +63,19 @@ syn keyword gjfHdft contained b3lyp B3P86 O3LYP APFD wB97XD LC-wHPBE LC-wPBE CAM
                             \ BMK HISSbPBE X3LYP BHandH BHandHLYP
 syn match gjfPdft contained "\<\(lc-\)\?\(S\|XA\|B\|PW91\|mPW\|G96\|PBE\|O\|TPSS\|revTPSS\|BRx\|PKZB\|wPBEh\|PBEh\)\(VWN\|VWN5\|LYP\|PL\|P86\|PW91\|B95\|PBE\|TPSS\|revTPSS\|KCIS\|BRC\|PKZB\|VP86\|V5LYP\)\>"
 syn keyword gjfPsdft contained VSXC HCTH HCTH93 HCTH147 HCTH407 tHCTH B97D B97D3 M06L SOGGA11 M11L MN12L N12 MN15L
+" empirical dispersion
+syn match gjfemp contained "\<EmpiricalDispersion\(=\(pdf\|d2\|d3\|d3bj\)\)\?\>" contains=gjfempd,gjfempdoptions
+syn keyword gjfempd contained EmpiricalDispersion
+syn keyword gjfempdoptions contained pdf d2 d3 d3bj
+syn keyword gjfempalone contained B97D B2PLYPD mPW2PLYPD B97D3 PW6B95D3 B2PLYPD3
+" gaussian generic keywords with option
+" syn match
+
+" bracket 
+syn cluster gjfParA contains=gjfParen,gjfParenClos,gjfParenOpen
+syn match gjfParenClos contained ")"
+syn match gjfParenOpen contained "("
+syn match gjfParen contained transparent "(\_[^ ]\+)" contains=ALLBUT,gjfParenOpen,gjfParenClos
 
 "Last line must be empty
 syn match gjfLast /^.\+\%$/
@@ -74,12 +87,14 @@ hi def link gjfComment   Comment
 hi def link GjfBlockCmd  Statement
 hi def link gjfLink0      PreProc
 hi def link GjfFloat     Float
-hi def link gjfPsdft Identifier
 hi def link gjfroot Identifier
-"hi def link gjfRoot Identifier
 hi def link gjfLast ErrorMsg
+hi def link gjfParenClos ErrorMsg
+hi def link gjfParenOpen ErrorMsg
 " root section colors
 hi def link gjfHdft gjfroot
 hi def link gjfPdft gjfroot
 hi def link gjfPsdft gjfroot
-hi def link gjfhash gjfroot
+hi def link gjfempd gjfroot
+" options of root section
+hi def link gjfempdoptions Exception
