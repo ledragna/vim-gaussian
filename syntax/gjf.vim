@@ -55,36 +55,51 @@ syn match gjfComment "!.*$" contains=gjfTodo,@Spell
 syn cluster gjfParA contains=gjfParen,gjfParenClos,gjfParenOpen
 syn match gjfParenClos contained ")"
 syn match gjfParenOpen contained "("
-syn match gjfParen contained transparent "(\_[^ ]\+)" contains=ALLBUT,gjfParenOpen,gjfParenClos,gjfcomma
+syn match gjfParen contained "(\_[^ ]\+)" contains=@gjfoptions
+"syn region gifinparen contained start="(" end=")" contains=
 " commas only between brackets
 syn match gjfcomma contained ","
-syn match gjfcommlef contained transparent "(," contains=gjfcomma
-syn match gjfcommrig contained transparent ",)" contains=gjfcomma
+syn match gjfcommlef contained "(," contains=gjfcomma
+syn match gjfcommrig contained ",)" contains=gjfcomma
 syn cluster gjfgeneral contains=@gjfParA,gjfcomma,gjfcommlef,gjfcommrig
 
 " Root section
-syn region gjfRootr start=/^#/ end=/^$/ contains=@gjfMethod,gjfComment,gjfroot,@gjfgeneral keepend transparent
+syn region gjfRootr start=/^#/ end=/^$/ contains=@gjfMethod,gjfComment,gjfroot,@gjfgeneral,@gjfkeyopts,gjfmp keepend
 syn match gjfroot contained "^#\(P\|M\)\?\>"
+" General match for keyword + options
+" syn match gjfKO contained "\<\i\+\(\(=\|=(\|(\)\i\+\)\?\>" contains=@gjfkeyopts,@gjfoptions,@gjfParA,@gjfgeneral
+" clusters of keeywords requiring options and options
+syn cluster gjfrtkey contains=gjfMethod,gjfmp,gjfempd
+syn cluster gjfoptions contains=gjfempdoptions
 
 " Methods
-syn cluster gjfMethod contains=gjfHf,@gjfdft
+syn cluster gjfMethod contains=gjfHf,@gjfdft,gjfempalone,gjfdhybrid,gjfemp
 " HF
 syn match gjfHf contained "\<\(U\|R\|RO\)\?HF\>" 
 " dft keywords
-syn cluster gjfdft contains=gjfHdft,gjfPdft,gjfPsdft,gjfemp
+syn cluster gjfdft contains=gjfHdft,gjfPdft,gjfPsdft
+" decorate dft and doublehybrid with U R and RO
+"syn match gjfdftdec contained "
+
 syn keyword gjfHdft contained b3lyp B3P86 O3LYP APFD wB97XD LC-wHPBE LC-wPBE CAM-B3LYP wB97XD
                             \ wB97 wB97X MN15 M11 SOGGA11X N12SX MN12SX PW6B95 PW6B95D3
                             \ M08HX M06 M06HF M062X M05 M052X PBE1PBE HSEH1PBE OHSE2PBE OHSE1PBE PBEh1PBE
                             \ B1B95 B1LYP mPW1PW91 mPW1LYP mPW1PBE mPW3PBE B98 B971 B972 TPSSh tHCTHhyb
                             \ BMK HISSbPBE X3LYP BHandH BHandHLYP
-syn match gjfPdft contained "\<\(lc-\)\?\(S\|XA\|B\|PW91\|mPW\|G96\|PBE\|O\|TPSS\|revTPSS\|BRx\|PKZB\|wPBEh\|PBEh\)\(VWN\|VWN5\|LYP\|PL\|P86\|PW91\|B95\|PBE\|TPSS\|revTPSS\|KCIS\|BRC\|PKZB\|VP86\|V5LYP\)\>"
+syn match gjfPdft contained "\<\(U\|R\|RO\)\?\(lc-\)\?\(S\|XA\|B\|PW91\|mPW\|G96\|PBE\|O\|TPSS\|revTPSS\|BRx\|PKZB\|wPBEh\|PBEh\)\(VWN\|VWN5\|LYP\|PL\|P86\|PW91\|B95\|PBE\|TPSS\|revTPSS\|KCIS\|BRC\|PKZB\|VP86\|V5LYP\)\>"
 syn keyword gjfPsdft contained VSXC HCTH HCTH93 HCTH147 HCTH407 tHCTH B97D B97D3 M06L SOGGA11 M11L MN12L N12 MN15L
 " empirical dispersion
-syn match gjfemp contained "\<\i\+\(\(=\|=(\|(\)\i\+\)\?\>" contains=gjfempd,gjfempdoptions,@gjfParA,@gjfgeneral
-"syn match gjfemp contained "\<EmpiricalDispersion\(=\(pdf\|d2\|d3\|d3bj\)\)\?\>" contains=gjfempd,gjfempdoptions
+" syn match gjfemp contained "\<\i\+\(\(=\|=(\|(\)\i\+\)\?\>" contains=gjfempd,gjfempdoptions,@gjfParA,@gjfgeneral
+" These options are only valid for empirical
+syn match gjfemp contained "\<EmpiricalDispersion\(=\(pdf\|d2\|d3\|d3bj\)\)\?\>" contains=gjfempd,gjfempdoptions
 syn keyword gjfempd contained EmpiricalDispersion
 syn keyword gjfempdoptions contained pdf d2 d3 d3bj
 syn keyword gjfempalone contained B97D B2PLYPD mPW2PLYPD B97D3 PW6B95D3 B2PLYPD3
+" double hybrid functionals
+syn keyword gjfdhybrid contained B2PLYP mPW2PLYP DSDPBEP86 PBE0DH PBEQIDH
+" MP Methods
+"syn match gjfru contained "\<\(U\|R\|RO\)" nextgroup=gjfmp
+syn keyword gjfmp contained mp2 mp3 mp4 mp5 MP4(SDTQ) MP4(DQ) MP4(SDQ)
 " gaussian generic keywords with option
 " syn match
 "syn match gjfkeyopt contained "\<\i\+\(\(=\|=(\|(\)\i\+\)\?\>"
@@ -111,5 +126,7 @@ hi def link gjfPdft gjfroot
 hi def link gjfPsdft gjfroot
 hi def link gjfempd gjfroot
 hi def link gjfHf gjfroot
+hi def link gjfru gjfroot
+hi def link gjfmp gjfroot
 " options of root section
 hi def link gjfempdoptions Exception
