@@ -107,15 +107,23 @@ syn keyword gjfmpopt contained FC FullDirect TWInCore SemiDirect Direct InCore
 "syn match gjfmp contained "\<\(U\|R\|RO\)\?\(mp2\|mp3\|mp4\|mp5\|MP4(SDTQ)\|MP4(DQ)\|MP4(SDQ)\)\>"
 " BasisSets
 " dunnings
-syn cluster gjfBS contains=gjfdunbs,gjfgnbs,gjfpopl,gjfnoparbas
+syn cluster gjfBS contains=gjfdunbs,gjfgnbs,gjfpopl,gjftwastbas,gjftwastbas,gjfplusbas
 syn match gjfdunbs contained /\v<((sp|d|m)?aug-|aug-|(t)?may-|(t)?june-|(t)?jul-)cc-pv(d|t|q|5|6)z>/
 syn keyword gjfgnbs contained  lanl2dz lanl2mb MidiX CBSB7 MTSmall SDD[all]
-syn match gjfpopl contained /\v<6-31(1)?(\+|\+\+)?G((\*|\*\*|\()[^ ]+)?/ contains=gjfpoplebs,gjfast,gjfpoppar
+" FIXME after the * needed a space 
+syn match gjfpopl contained /\v<6-31(1)?(\+|\+\+)?G(\*|\*\*|\([^ ]+)?/ contains=gjfpoplebs,gjfast,gjfpoppar
 syn match gjfast contained "\v*"
-syn match gjfpoppar contained /\v<((2|3)?d(f)?|,(2|3)?p(d)?)/
+syn match gjfpoppar contained /\v(<(2|3)?d(f)?>|,(2|3)?p(d)?>)/ contains=gjfpopinpar
+syn match gjfpopinpar contained /\v(2|3|p|d|f)/
 syn match gjfpoplebs contained /\v6-31(1)?(\+|\+\+)?G>/
-" only * or +
-"syn match gjfnoparbas contained /\(3-21\(+\)\?G\|6-21G\(\*\|\*\*\)\?\|4-31G\(*\|**\)\? \|SHC\(*\)\?\|SEC\(*\)\?\|CEP-\(4\|31\|121\)G\(*\)\?\|CBSB7\(+\|++\)\?\|sto-3g\|EPR-II\|EPR-III\)\( \|\n\)/
+" only +
+syn match gjfplusbas contained /\v<(3-21(\+)?G|CBSB7(\+|\+\+)?|sto-3g|EPR-II|EPR-III)>/
+" only one *
+syn match gjfnoparbas contained /\(6-21G\|4-31G\|SHC\|SEC\|CEP-\(4\|31\|121\)G\)\>/
+" two *
+" FIXME handle the *
+syn match gjftwastbas contained /\v<(6-21G|4-31G)(\*(\*)?[ ])?/ contains=gjfnoparbas,gjfast
+syn match gjftwastbas contained /\v<(SHC|SEC|CEP-(4|31|121)G)(\*[ ])?/ contains=gjfnoparbas,gjfast
 
 "Last line must be empty
 syn match gjfLast /^.\+\%$/
@@ -147,7 +155,8 @@ hi def link gjfgnbs gjfroot
 hi def link gjfpoplebs gjfroot
 hi def link gjfnoparbas gjfroot
 hi def link gjfast gjfroot
-hi def link gjfpoppar gjfroot
+hi def link gjfpopinpar gjfroot
+hi def link gjfplusbas gjfroot
 " options of root section
 hi def link gjfempdoptions Exception
 hi def link gjfmp4opt Exception
