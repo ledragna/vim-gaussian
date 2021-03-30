@@ -9,6 +9,8 @@ endif
 
 " Ignore case Fortran Based
 syn case ignore
+" -,+,* used in keywords
+setlocal iskeyword+=-,+,*
 
 " Integer with - + or nothing in front
 syn match gjfNumber '\d\+'
@@ -55,25 +57,26 @@ syn match gjfComment "!.*$" contains=gjfTodo,@Spell
 syn cluster gjfParA contains=gjfParen,gjfParenClos,gjfParenOpen
 syn match gjfParenClos contained ")"
 syn match gjfParenOpen contained "("
-syn match gjfParen contained "(\_[^ ]\+)" contains=gjfemp,gjfmp,gjfpopl
+syn match gjfParen contained "(\_[^ ]\+)" contains=gjfemp,gjfmp,gjfmp,gjftd,gjfpopl,gjfcommlef,gjfcommrig
+" nextgroup=gjfanlyrig
 "syn region gifinparen contained start="(" end=")" contains=
 " commas only between brackets
 syn match gjfcomma contained ","
 syn match gjfcommlef contained "(," contains=gjfcomma
 syn match gjfcommrig contained ",)" contains=gjfcomma
+" highlight missing space after )
+syn match gjfanlyrig contained /[^ ]/
 syn cluster gjfgeneral contains=@gjfParA,gjfcomma,gjfcommlef,gjfcommrig
 
 " Root section
-syn region gjfRootr start=/^#/ end=/^$/ contains=@gjfMethod,gjfComment,gjfroot,@gjfgeneral,@gjfkeyopts,@gjfBS keepend
+syn region gjfRootr start=/^#/ end=/^$/ contains=@gjfMethod,gjfComment,gjfroot,@gjfgeneral,@gjfBS keepend
 syn match gjfroot contained "^#\(P\|M\)\?\>"
-" General match for keyword + options
-" syn match gjfKO contained "\<\i\+\(\(=\|=(\|(\)\i\+\)\?\>" contains=@gjfkeyopts,@gjfoptions,@gjfParA,@gjfgeneral
 " clusters of keeywords requiring options and options
 "syn cluster gjfrtkey contains=gjfMethod,gjfmp,gjfempd
 syn cluster gjfoptions contains=gjfempdoptions
 
 " Methods
-syn cluster gjfMethod contains=gjfHf,@gjfdft,gjfempalone,gjfemp,gjfmp
+syn cluster gjfMethod contains=gjfHf,@gjfdft,gjfempalone,gjfemp,gjfmp,gjfmp4,gjftd
 " HF
 syn match gjfHf contained "\<\(U\|R\|RO\)\?HF\>" 
 " dft keywords
@@ -86,44 +89,47 @@ syn match gjfHdft2 contained /\v<(U|R|RO)?((M)?N12SX|PW6B95(D3)?|M0(8HX|6|6HF|62
 syn match gjfHdft3 contained /\v<(U|R|RO)?((mPW1|b3)PW91|B9(8|71|72)|TPSSh|tHCTHhyb|BMK|HISSbPBE|BHandH(LYP)?)>/
 syn match gjfPdft contained /\v<(U|R|RO)?(lc-)?(S|XA|B|PW91|mPW|G96|PBE|O|TPSS|revTPSS|BRx|PKZB|wPBEh|PBEh)(VWN|VWN5|LYP|PL|P86|PW91|B95|PBE|TPSS|revTPSS|KCIS|BRC|PKZB|VP86|V5LYP)>/
 syn match gjfPsdft contained /\v<(U|R|RO)?(VSXC|(t)?HCTH(93|147|407)?|B97D(3)?|M06L|SOGGA11|M11L|MN12L|N12|MN15L)>/
-"syn keyword gjfPsdft contained VSXC HCTH HCTH93 HCTH147 HCTH407 tHCTH B97D B97D3 M06L SOGGA11 M11L MN12L N12 MN15L
 " empirical dispersion
-" syn match gjfemp contained "\<\i\+\(\(=\|=(\|(\)\i\+\)\?\>" contains=gjfempd,gjfempdoptions,@gjfParA,@gjfgeneral
-" These options are only valid for empirical
-syn match gjfemp contained "\<EmpiricalDispersion\(\(=\|=(\|(\)\(pdf\|d2\|d3\|d3bj\)[^ ]\+\)\?\>" contains=gjfempd,gjfempdoptions
+syn match gjfemp contained "\<EmpiricalDispersion\(\(=\|=(\|(\)[^ ]\+\)\?" contains=gjfempd,gjfempdoptions nextgroup=gjfanlyrig
 syn keyword gjfempd contained EmpiricalDispersion
+" These options are only valid for empirical
 syn keyword gjfempdoptions contained pdf d2 d3 d3bj
-"syn keyword gjfempalone contained B97D B2PLYPD mPW2PLYPD B97D3 PW6B95D3 B2PLYPD3
 " double hybrid functionals
-"syn keyword gjfdhybrid contained B2PLYP mPW2PLYP DSDPBEP86 PBE0DH PBEQIDH
 syn match gjfempalone "\v<(U|R|RO)?(B2PLYP(D|D3)?|mPW2PLYP(D)?|DSDPBEP86|PBE0DH|PBEQIDH|B97D(3)?|PW6B95D3)>"
 " MP Methods
 "syn keyword gjfmp contained mp2 mp3 mp4 mp5 MP4(SDTQ) MP4(DQ) MP4(SDQ)
-syn match gjfmp contained /\<\(U\|R\|RO\)\?\(mp2\|mp3\|mp4\|mp5\)\(\(=\|=(\|(\)[^ ]\+\)\?/ contains=gjfmpk,gjfmp4opt,gjfmpopt
+syn match gjfmp contained /\<\(U\|R\|RO\)\?\(mp2\|mp3\|mp5\)\(\(=\|=(\|(\)[^ ]\+\)\?/ contains=gjfmpk,gjfmpopt
+syn match gjfmp4 contained /\<\(U\|R\|RO\)\?mp4\(\(=\|=(\|(\)[^ ]\+\)\?/ contains=gjfmpk,gjfmp4opt,gjfmpopt
 syn match gjfmpk contained /\v<(U|R|RO)?(mp2|mp3|mp4|mp5)>/
-" not working problemi with regions
-syn match gjfmp4opt contained /mp4[^ ]\+\zs\<\(SDTQ\|DQ\|SDQ\)\>/
+syn keyword gjfmp4opt contained SDTQ DQ SDQ
 syn keyword gjfmpopt contained FC FullDirect TWInCore SemiDirect Direct InCore
-"syn match gjfmp contained "\<\(U\|R\|RO\)\?\(mp2\|mp3\|mp4\|mp5\|MP4(SDTQ)\|MP4(DQ)\|MP4(SDQ)\)\>"
 " BasisSets
 " dunnings
 syn cluster gjfBS contains=gjfdunbs,gjfgnbs,gjfpopl,gjftwastbas,gjftwastbas,gjfplusbas
 syn match gjfdunbs contained /\v<((sp|d|m)?aug-|aug-|(t)?may-|(t)?june-|(t)?jul-)cc-pv(d|t|q|5|6)z>/
 syn keyword gjfgnbs contained  lanl2dz lanl2mb MidiX CBSB7 MTSmall SDD[all]
-" FIXME after the * needed a space 
-syn match gjfpopl contained /\v<6-31(1)?(\+|\+\+)?G(\*|\*\*|\([^ ]+)?/ contains=gjfpoplebs,gjfast,gjfpoppar
-syn match gjfast contained "\v*"
+syn match gjfpopl contained /\v<6-31(1)?(\+|\+\+)?G(\*|\*\*|\([^ ]+)?/ contains=gjfpoplebs,gjfpoplebs2,gjfpoppar
+syn match gjfast contained "*"
 syn match gjfpoppar contained /\v(<(2|3)?d(f)?>|,(2|3)?p(d)?>)/ contains=gjfpopinpar
 syn match gjfpopinpar contained /\v(2|3|p|d|f)/
 syn match gjfpoplebs contained /\v6-31(1)?(\+|\+\+)?G>/
+syn match gjfpoplebs2 contained /\v6-31(1)?(\+|\+\+)?G(\*(\*)?)?>/
 " only +
 syn match gjfplusbas contained /\v<(3-21(\+)?G|CBSB7(\+|\+\+)?|sto-3g|EPR-II|EPR-III)>/
 " only one *
-syn match gjfnoparbas contained /\(6-21G\|4-31G\|SHC\|SEC\|CEP-\(4\|31\|121\)G\)\>/
+syn match gjfnoparbas contained /\(6-21G\|4-31G\|SHC\|SEC\|CEP-\(4\|31\|121\)G\)/
 " two *
-" FIXME handle the *
-syn match gjftwastbas contained /\v<(6-21G|4-31G)(\*(\*)?[ ])?/ contains=gjfnoparbas,gjfast
-syn match gjftwastbas contained /\v<(SHC|SEC|CEP-(4|31|121)G)(\*[ ])?/ contains=gjfnoparbas,gjfast
+syn match gjftwastbas contained /\v<(6-21G|4-31G)(\*(\*)?)?>/ contains=gjfnoparbas,gjfast
+syn match gjftwastbas contained /\v<(SHC|SEC|CEP-(4|31|121)G)(\*)?>/ contains=gjfnoparbas,gjfast
+" TD
+syn match gjftd contained /\<TD\(A\|-DFTB\)\?\(\(=\|=(\|(\)[^ ]\+\)\?/ contains=gjftdkey,gjftdopt,gjfNumber
+syn keyword gjftdkey contained TD[A] TD-DFTB CIS
+syn keyword gjftdopt contained Singlets Triplets root nstates add read restart EqSolv IVOGuess
+                             \ SOS NonAdiabaticCoupling NAC NoNonAdiabaticCoupling NoNAC Conver
+                             \ GOccSt GOccEnd GDEMin DEMin IFact WhenReduce
+" CIS
+syn match gjfcis contained /\<CIS\(\(=\|=(\|(\)[^ ]\+\)\?/ contains=gjftdkey
+
 
 "Last line must be empty
 syn match gjfLast /^.\+\%$/
@@ -136,11 +142,13 @@ hi def link GjfBlockCmd  Statement
 hi def link gjfLink0      PreProc
 hi def link GjfFloat     Float
 hi def link gjfroot Identifier
+hi def link gjfNumber Number
 " Errors
 hi def link gjfLast ErrorMsg
 hi def link gjfParenClos ErrorMsg
 hi def link gjfParenOpen ErrorMsg
 hi def link gjfcomma ErrorMsg
+hi def link gjfanlyrig ErrorMsg
 " root section colors
 hi def link gjfHdft1 gjfroot
 hi def link gjfHdft2 gjfroot
@@ -153,11 +161,14 @@ hi def link gjfmpk gjfroot
 hi def link gjfdunbs gjfroot
 hi def link gjfgnbs gjfroot
 hi def link gjfpoplebs gjfroot
+hi def link gjfpoplebs2 gjfroot
 hi def link gjfnoparbas gjfroot
 hi def link gjfast gjfroot
 hi def link gjfpopinpar gjfroot
 hi def link gjfplusbas gjfroot
+hi def link gjftdkey gjfroot
 " options of root section
 hi def link gjfempdoptions Exception
 hi def link gjfmp4opt Exception
 hi def link gjfmpopt Exception
+hi def link gjftdopt Exception
